@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>今晚玩啥？转转转！</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            padding-bottom: 40px;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin: 20px 0;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            background: linear-gradient(45deg, #FFD700, #FF6347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .wheel-wrapper {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 30px auto;
+            filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+        }
+        
+        .wheel {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .wheel-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #FF6B6B 0deg 50.571deg,
+                #4ECDC4 50.571deg 101.143deg,
+                #45B7D1 101.143deg 151.714deg,
+                #96CEB4 151.714deg 202.286deg,
+                #FECA57 202.286deg 252.857deg,
+                #FF0000 252.857deg 258.857deg,  /* 6度红色区域 */
+                #A8E6CF 258.857deg 309.429deg,
+                #FFD93D 309.429deg 360deg
+            );
+        }
+        
+        .wheel-item {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-weight: 800;
+            font-size: 14px;
+            text-shadow: 0 0 5px rgba(0,0,0,0.8);
+            pointer-events: none;
+            background: rgba(0,0,0,0.3);
+            padding: 3px 6px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+            white-space: nowrap;
+        }
+        
+        .pointer {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 40px solid #FFD700;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.8));
+            z-index: 10;
+        }
+        
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, #FFD700, #FF6347);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            color: #1a1a2e;
+            font-size: 14px;
+        }
+        
+        .spin-btn {
+            background: linear-gradient(45deg, #FFD700, #FF6347);
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: 900;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            transition: all 0.3s;
+            margin: 20px 0;
+        }
+        
+        .spin-btn:active { transform: scale(0.95); }
+        .spin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .author {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            opacity: 0.6;
+            color: #FFD700;
+        }
+        
+        @media (max-width: 375px) {
+            .wheel-wrapper { width: 280px; height: 280px; }
+            h1 { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 今晚玩啥？转转转！ 🎯</h1>
+        
+        <div class="wheel-wrapper">
+            <div class="pointer"></div>
+            <div class="center-circle">GO!</div>
+            <div class="wheel" id="wheel">
+                <div class="wheel-bg"></div>
+                <!-- 文字标签（中点位置） -->
+                <div class="wheel-item" style="transform: translate(-50%, -50%) rotate(25.2855deg) translateY(-90px)">麻将</div>
+                <div class="wheel-item" style="transform: translate(-50%, -50%) rotate(75.857deg) translateY(-90px)">台球</div>
+                <div class="wheel-item" style="transform: translate(-50%, -50%) rotate(126.4285deg) translateY(-90px)">桌游</div>
+                <div class="wheel-item" style="transform: translate(-50%, -50%) rotate(177deg) translateY(-90px)">躲猫猫</div>
+                <div class="wheel-item" style="transform: translate(-50%, -50%) rotate(227.5715deg) translateY(-90px)">真心话</div>
+                <div class="wheel-item" style="transform: translate(-50%, -50%) rotate(255.857deg) translateY(-90px); font-size: 11px; background: rgba(255,0,0,0.5); color: #FFD700;">无畏契约</div>
+                <div class="wheel-item" style="transform: translate(-50%, -50%) rotate(284.143deg) translateY(-90px)">你画我猜</div>
+                <div class="wheel-item" style="transform: translate(-50%, -50%) rotate(334.7145deg) translateY(-90px)">逛夜市</div>
+            </div>
+        </div>
+        
+        <button class="spin-btn" id="spinBtn" onclick="spin()">🎲 转！转！转！</button>
+        
+        <div class="result" id="result">
+            点击按钮开始吧！
+        </div>
+    </div>
+    
+    <div class="author">作者：徐喆</div>
+    
+    <script>
+        let isSpinning = false;
+        
+        function spin() {
+            if (isSpinning) return;
+            
+            isSpinning = true;
+            const wheel = document.getElementById('wheel');
+            const btn = document.getElementById('spinBtn');
+            const result = document.getElementById('result');
+            
+            btn.disabled = true;
+            btn.textContent = '🎲 转盘中...';
+            result.textContent = '命运之轮转动中...';
+            
+            // 精确计算：每次从当前位置旋转到目标角度
+            // 目标：指针停在255.857°（无畏契约占6°，中点255.857°）
+            // 转盘需要旋转：(360 - 255.857) + n*360 = 104.143° + n*360
+            const targetAngle = 104.143;
+            const spins = 5 + Math.floor(Math.random() * 3); // 5-7圈
+            const totalRotation = targetAngle + spins * 360;
+            
+            // 使用getComputedStyle获取当前旋转角度
+            const currentTransform = window.getComputedStyle(wheel).transform;
+            let currentAngle = 0;
+            if (currentTransform !== 'none') {
+                const values = currentTransform.split('(')[1].split(')')[0].split(',');
+                const a = values[0];
+                const b = values[1];
+                currentAngle = Math.round(Math.atan2(b, a) * (180/Math.PI));
+                if (currentAngle < 0) currentAngle += 360;
+            }
+            
+            // 计算需要旋转的总角度（从当前位置到目标位置）
+            const rotateAmount = (spins * 360) + ((targetAngle - currentAngle + 360) % 360);
+            
+            wheel.style.transform = `rotate(${rotateAmount}deg)`;
+            
+            // 4秒后显示结果
+            setTimeout(() => {
+                // 震动反馈
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+                
+                result.innerHTML = `
+                    <div style="animation: pulse 0.5s 3; color: #FFD700;">
+                        🎉 <strong>命运选择了！</strong><br>
+                        <span style="font-size: 24px; color: #FF0000;">无畏契约</span>！
+                    </div>
+                `;
+                
+                btn.disabled = false;
+                btn.textContent = '🎲 再来一次！';
+                isSpinning = false;
+            }, 4000);
+        }
+        
+        // 添加脉冲动画
+        const style = document.createElement('style');
+        style.textContent = `@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }`;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
+
